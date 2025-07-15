@@ -90,4 +90,14 @@ router.get(
   })
 );
 
+router.get(
+  "/search/query",
+  asyncWrap(async (req, res) => {
+    const { q } = req.query;
+    const regex = new RegExp(q, "i"); // case-insensitive search
+    const listings = await Listing.find({ title: regex }); // you can add more fields
+    res.json(listings);
+  })
+);
+
 module.exports = router;
