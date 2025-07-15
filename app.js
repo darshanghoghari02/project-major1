@@ -5,6 +5,8 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const expressError = require("./utils/expressError.js");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 const listing = require("./router/listing.js");
 const review = require("./router/review.js");
@@ -23,6 +25,26 @@ main()
 async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/major1");
 }
+
+const sessionOption = {
+  secret: "secretecode",
+  saveUninitialized: true,
+  resave: false,
+  cookie: {
+    expires: 5 * 24 * 60 * 60 * 1000,
+    maxAge: 5 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  },
+};
+
+app.use(session(sessionOption));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
 
 // listing
 app.use("/listing", listing);
