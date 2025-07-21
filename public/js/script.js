@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
   searchInput.addEventListener("input", function () {
     const query = this.value.trim();
 
-    fetch(`/listing/search/query?q=${encodeURIComponent(query)}`)
+    fetch(`/listing/search/query?q=${searchInput.value}`)
       .then((res) => res.json())
       .then((data) => {
         container.innerHTML = "";

@@ -7,9 +7,13 @@ const ejsMate = require("ejs-mate");
 const expressError = require("./utils/expressError.js");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./model/user.js");
 
-const listing = require("./router/listing.js");
-const review = require("./router/review.js");
+const listingRouter = require("./router/listing.js");
+const reviewRouter = require("./router/review.js");
+const userRouter = require("./router/user.js");
 
 app.engine("ejs", ejsMate);
 app.use(express.urlencoded({ extended: true }));
@@ -40,6 +44,12 @@ const sessionOption = {
 app.use(session(sessionOption));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -47,9 +57,20 @@ app.use((req, res, next) => {
 });
 
 // listing
-app.use("/listing", listing);
+app.use("/listing", listingRouter);
 // review
-app.use("/listing/:id/review", review);
+app.use("/listing/:id/review", reviewRouter);
+app.use("/", userRouter);
+
+// app.get("/user", async (req, res) => {
+//   let newuser = new User({
+//     username: "Darshan",
+//     email: "darshan@gmail.com",
+//   });
+
+//   let registerUser = await User.register(newuser, "Dar123");
+//   res.send(registerUser);
+// });
 
 app.get("/getcookies", (req, res) => {
   res.cookie("hello", "namaste");
