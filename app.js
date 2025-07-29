@@ -27,8 +27,6 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 const dbUrl = process.env.ATLAS_URI;
 
-// "mongodb://127.0.0.1:27017/major1"
-
 main()
   .then(() => {
     console.log("Connection Successful");
@@ -53,7 +51,7 @@ store.on("error", function (e) {
 
 const sessionOption = {
   store,
-  secret: process.env.SECRET ,
+  secret: process.env.SECRET,
   saveUninitialized: true,
   resave: false,
   cookie: {
@@ -85,25 +83,12 @@ app.use("/listing", listingRouter);
 app.use("/listing/:id/review", reviewRouter);
 app.use("/", userRouter);
 
-// app.get("/user", async (req, res) => {
-//   let newuser = new User({
-//     username: "Darshan",
-//     email: "darshan@gmail.com",
-//   });
-
-//   let registerUser = await User.register(newuser, "Dar123");
-//   res.send(registerUser);
-// });
-
 app.get("/getcookies", (req, res) => {
   res.cookie("hello", "namaste");
   res.cookie("key", "value");
   res.send("Cookkies");
 });
 
-// app.get("/", (req, res) => {
-//   res.send("Root Request");
-// });
 
 app.use((req, res, next) => {
   next(new expressError(404, "Page Not Found !!!"));
