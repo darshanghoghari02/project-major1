@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -6,6 +10,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const expressError = require("./utils/expressError.js");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -20,6 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 
+const dbUrl = process.env.ATLAS_URI;
+
+// "mongodb://127.0.0.1:27017/major1"
+
 main()
   .then(() => {
     console.log("Connection Successful");
@@ -27,10 +36,23 @@ main()
   .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/major1");
+  await mongoose.connect(dbUrl);
 }
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: "secretecode",
+  },
+  touchAfter: 24 * 3600, // time in seconds
+});
+
+store.on("error", function (e) {
+  console.log("Session Store Error", e);
+});
+
 const sessionOption = {
+  store,
   secret: "secretecode",
   saveUninitialized: true,
   resave: false,
@@ -53,6 +75,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.curntUser = req.user;
   next();
 });
 
@@ -78,9 +101,9 @@ app.get("/getcookies", (req, res) => {
   res.send("Cookkies");
 });
 
-app.get("/", (req, res) => {
-  res.send("Root Request");
-});
+// app.get("/", (req, res) => {
+//   res.send("Root Request");
+// });
 
 app.use((req, res, next) => {
   next(new expressError(404, "Page Not Found !!!"));

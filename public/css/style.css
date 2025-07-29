@@ -62,3 +62,30 @@ body {
   border-radius: 100px;
   /* pointer-events: none; */
 }
+#filters {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.filter {
+  margin-top: 2rem;
+  text-align: center;
+  margin-right: 2rem;
+  color: rgba(0, 0, 0, 0.686);
+  text-decoration: none;
+}
+
+.filter:hover {
+  color: black;
+  cursor: pointer;
+}
+
+.filter div {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.filter p {
+  margin: 0;
+  font-weight: bold;
+}

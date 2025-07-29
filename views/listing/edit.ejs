@@ -6,7 +6,8 @@
 
             <h1>List Edited</h1>
 
-            <form method="post" action="/listing/<%=list._id%>" class="needs-validation" novalidate>
+            <form method="post" action="/listing/<%=list._id%>" class="needs-validation" novalidate
+                enctype="multipart/form-data">
                 <div class="row mb-3">
 
                     <label for="title" class="form-label">Title</label>
@@ -20,10 +21,13 @@
                         required><%= list.description %></textarea>
                 </div>
                 <div class="row mb-3">
+                    <p>Original Image :-</p>
+                    <img src="<%= originalImageurl %>" class="w-50 h-50 object-fit-cover"  alt="">
+                </div>
+                <div class="row mb-3">
 
                     <label for="image" class="form-label">Image</label>
-                    <input type="text" id="image" name="listing[image]" class="form-control" value="<%=list.image%>"
-                        required>
+                    <input type="file" id="image" name="listing[image]" class="form-control">
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -51,6 +55,6 @@
                 <button class="btn btn-primary mt-5"> Edit</button>
             </form>
 
-           
+
         </div>
     </body>

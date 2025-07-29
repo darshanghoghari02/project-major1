@@ -5,7 +5,7 @@
 
 
             <h1 class="mb-3"> Created New List</h1>
-            <form method="post" action="/listing" class="needs-validation" novalidate>
+            <form method="post" action="/listing" class="needs-validation" novalidate enctype="multipart/form-data">
 
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
@@ -18,10 +18,25 @@
                     <textarea id="description" name="listing[description]" rows="5" cols="50"
                         placeholder="Enter description" class="form-control description" required></textarea>
                 </div>
+
                 <div class="mb-3">
-                    <label for="image" class="form-label">Image</label>
-                    <input type="text" id="image" name="listing[image]" placeholder="Enter image URL"
-                        class="form-control">
+                    <select class="form-select" name="listing[category]" aria-label="Default select example">
+                        <option selected disabled>Select a category</option>
+                        <option value="tranding">Tranding</option>
+                        <option value="rooms">Rooms</option>
+                        <option value="cities">Iconic cities</option>
+                        <option value="mountain">Mountain</option>
+                        <option value="castle">Castle</option>
+                        <option value="pools">Amazing Pools</option>
+                        <option value="camping">Camping</option>
+                        <option value="farms">Farms</option>
+                        <option value="arctic">Arctic</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Choose Listing File</label>
+                    <input type="file" id="image" name="listing[image]" class="form-control">
                 </div>
 
                 <div class="row">

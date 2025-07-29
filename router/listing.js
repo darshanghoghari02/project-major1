@@ -1,107 +1,49 @@
 const express = require("express");
 const router = express.Router();
 const asyncWrap = require("../utils/asyncWrap.js");
-const expressError = require("../utils/expressError.js");
-const { listingSchema } = require("../schema.js");
-const Listing = require("../model/listing.js");
-const { isLogin } = require("../middleware.js");
+const { isLogin, isOwner, validatelisting } = require("../middleware.js");
+const listingController = require("../controllers/listing.js");
+const multer = require("multer");
 
-const validatelisting = async (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
+const { storage } = require("../cloudConfig.js");
+const upload = multer({ storage });
 
-  if (error) {
-    let errmsg = error.details.map((el) => el.message).join(",");
-    throw new expressError(400, errmsg);
-  } else {
-    next();
-  }
-};
 //show
 
-router.get("/", async (req, res) => {
-  let allshow = await Listing.find({});
-  res.render("listing/show.ejs", { allshow });
-});
-
-// delete route
-router.delete(
-  "/:id",
-  isLogin,
-  asyncWrap(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    req.flash("success", "Listing Deleted");
-    res.redirect("/listing");
-  })
-);
+router
+  .route("/")
+  .get(listingController.listingShow)
+  .post(
+    isLogin,
+    upload.single("listing[image]"),
+    validatelisting,
+    asyncWrap(listingController.listingCreate)
+  );
 
 // new List
 
-router.get("/new", isLogin, (req, res) => {
-  res.render("listing/new.ejs");
-});
+router.get("/new", isLogin, listingController.listingNew);
 
-router.post(
-  "/",
-  validatelisting,
-  asyncWrap(async (req, res) => {
-    let newlisting = new Listing(req.body.listing);
-    req.flash("success", "New Listing Added");
-    await newlisting.save();
-    res.redirect("/listing");
-  })
-);
+router
+  .route("/:id")
+  .get(asyncWrap(listingController.listingDetail))
+  .post(
+    isLogin,
+    isOwner,
+    upload.single("listing[image]"),
+    asyncWrap(listingController.listingUpdate)
+  )
+  .delete(isLogin, isOwner, asyncWrap(listingController.listingDestory));
 
 // edit route
 
 router.get(
   "/edit/:id",
   isLogin,
-  asyncWrap(async (req, res) => {
-    let { id } = req.params;
-    let list = await Listing.findById(id);
-    if (!list) {
-      req.flash("error", "This Listing Does't Exist");
-      return res.redirect("/listing");
-    }
-    res.render("listing/edit.ejs", { list });
-  })
+  isOwner,
+  asyncWrap(listingController.listingEdit)
 );
 
-router.post(
-  "/:id",
-  isLogin,
-  asyncWrap(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    req.flash("success", "Listing Updated");
-    res.redirect(`/listing/${id}`);
-  })
-);
-
-// detail show
-
-router.get(
-  "/:id",
-  asyncWrap(async (req, res) => {
-    let { id } = req.params;
-    let list = await Listing.findById(id).populate("reviews");
-    if (!list) {
-      req.flash("error", "Don't Exist");
-      return res.redirect("/listing");
-    }
-    res.render("listing/detail.ejs", { list });
-  })
-);
-
-router.get(
-  "/search/query",
-  asyncWrap(async (req, res) => {
-    const { q } = req.query;
-    const regex = new RegExp(q, "i"); // case-insensitive search
-    const listings = await Listing.find({ title: regex }); // you can add more fields
-    res.json(listings);
-  })
-);
+router.get("/search/query", asyncWrap(listingController.listingSearch));
 
 module.exports = router;

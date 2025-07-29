@@ -47,7 +47,10 @@ document.addEventListener("DOMContentLoaded", function () {
         container.innerHTML = "";
 
         if (data.length === 0) {
-          container.innerHTML = "<p class='text-center'>No listings found.</p>";
+          container.innerHTML =
+            '<div class="d-flex justify-content-center align-items-center" style="height: 50vh;">' +
+            '<h1 class="text-center">No listings found.</h1>' +
+            "</div>";
           return;
         }
 
@@ -59,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 list._id
               }">
                 <div class="card h-100 shadow-sm">
-                  <img src="${list.image}" class="card-img-top" alt="${
+                  <img src="${list.image.url}" class="card-img-top" alt="${
             list.title
           }" style="height: 200px; object-fit: cover;">
                   <div class="card-body">
