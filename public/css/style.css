@@ -64,6 +64,7 @@ body {
 }
 #filters {
   display: flex;
+  align-items: center;
   margin-bottom: 20px;
 }
 
@@ -89,3 +90,15 @@ body {
   margin: 0;
   font-weight: bold;
 }
+ .text-switch {
+      border: 1px solid gray;
+      display: flex;
+      align-items: center;
+      height: 5vh;
+      border-radius: 10px;
+      padding: .5rem 1rem;
+    }
+
+    .gst {
+      display: none;
+    }
